@@ -5,6 +5,7 @@ from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 import random
+from tqdm import tqdm
 
 # Hyperparameters
 num_epochs = 5
@@ -89,7 +90,7 @@ def train(model, dataloader, optimizer):
     total_loss = 0
     correct = 0
     total = 0
-    for x, y in dataloader:
+    for x, y in tqdm(dataloader, desc="   🔧 Training"):
         x, y = x.to(device), y.to(device)
         optimizer.zero_grad()
         out = model.infer(x)
@@ -112,14 +113,14 @@ def test(model, dataloader):
     correct = 0
     total = 0
     with torch.no_grad():
-        for x, y in dataloader:
+        for x, y in tqdm(dataloader, desc="\n🧪 Testing"):
             x, y = x.to(device), y.to(device)
             out = model(x)
             preds = out.argmax(dim=1)
             correct += (preds == y).sum().item()
             total += y.size(0)
     acc = correct / total
-    print(f"\n🧪 Test Accuracy: {acc * 100:.2f}%")
+    print(f"   📈 Test Accuracy: {acc * 100:.2f}%")
     return acc
 
 
@@ -127,7 +128,6 @@ def predict_single_sample(model, dataset):
     model.eval()
     idx = random.randint(0, len(dataset) - 1)  # pick a random index
     x, y = dataset[idx]
-    x, y = dataset[0]
     x = x.unsqueeze(0).to(device)
     with torch.no_grad():
         out = model(x)
@@ -140,7 +140,7 @@ def predict_single_sample(model, dataset):
     # Plot the image
     plt.figure(figsize=(2, 2))
     plt.imshow(x.squeeze(), cmap='gray')
-    plt.title(f'Actual: {y} |  Predicted: {pred}')
+    plt.title(f'Actual: {y}   Predicted: {pred}')
     plt.axis('off')
     plt.show()
     
