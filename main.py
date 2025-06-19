@@ -102,9 +102,23 @@ def train(model, dataloader, optimizer):
 
     avg_loss = total_loss / len(dataloader)
     accuracy = correct / total
-    print(f"Train loss: {avg_loss:.4f}, Train accuracy: {accuracy*100:.2f}%")
+    print(f"Train loss: {avg_loss:.4f} | Train accuracy: {accuracy*100:.2f}%")
     return avg_loss, accuracy
 
+def test(model, dataloader):
+    model.eval()
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        for x, y in dataloader:
+            x, y = x.to(device), y.to(device)
+            out = model(x)
+            preds = out.argmax(dim=1)
+            correct += (preds == y).sum().item()
+            total += y.size(0)
+    acc = correct / total
+    print(f"Test accuracy: {acc * 100:.2f}%")
+    return acc
 
 def main():
     transform = transforms.Compose([
@@ -112,7 +126,10 @@ def main():
         transforms.Normalize((0.1307,), (0.3081,))
     ])
     train_data = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
+    test_data = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
+        
     train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_data, batch_size=batch_size, shuffle=False)
 
     model = PredictiveCodingNet().to(device)
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
@@ -121,6 +138,8 @@ def main():
     for epoch in range(num_epochs):
         print(f"Epoch {epoch + 1}/{num_epochs}")
         train(model, train_loader, optimizer)
+    
+    test(model, test_loader)
 
 
 if __name__ == "__main__":
