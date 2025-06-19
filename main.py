@@ -120,6 +120,17 @@ def test(model, dataloader):
     print(f"Test accuracy: {acc * 100:.2f}%")
     return acc
 
+
+def predict_single_sample(model, dataset):
+    model.eval()
+    x, y = dataset[0]
+    x = x.unsqueeze(0).to(device)
+    with torch.no_grad():
+        out = model(x)
+        pred = out.argmax(dim=1).item()
+    print(f"Actual label: {y}")
+    print(f"Predicted label: {pred}")
+
 def main():
     transform = transforms.Compose([
         transforms.ToTensor(),
@@ -140,6 +151,8 @@ def main():
         train(model, train_loader, optimizer)
     
     test(model, test_loader)
+    
+    predict_single_sample(model, test_data)
 
 
 if __name__ == "__main__":
