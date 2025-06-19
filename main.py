@@ -3,6 +3,8 @@ import torch.nn as nn
 import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
+import matplotlib.pyplot as plt
+import random
 
 # Hyperparameters
 num_epochs = 5
@@ -102,7 +104,7 @@ def train(model, dataloader, optimizer):
 
     avg_loss = total_loss / len(dataloader)
     accuracy = correct / total
-    print(f"Train loss: {avg_loss:.4f} | Train accuracy: {accuracy*100:.2f}%")
+    print(f"   📉 Train Loss: {avg_loss:.4f}   📊 Train Accuracy: {accuracy*100:.2f}%")
     return avg_loss, accuracy
 
 def test(model, dataloader):
@@ -117,19 +119,58 @@ def test(model, dataloader):
             correct += (preds == y).sum().item()
             total += y.size(0)
     acc = correct / total
-    print(f"Test accuracy: {acc * 100:.2f}%")
+    print(f"\n🧪 Test Accuracy: {acc * 100:.2f}%")
     return acc
 
 
 def predict_single_sample(model, dataset):
     model.eval()
+    idx = random.randint(0, len(dataset) - 1)  # pick a random index
+    x, y = dataset[idx]
     x, y = dataset[0]
     x = x.unsqueeze(0).to(device)
     with torch.no_grad():
         out = model(x)
         pred = out.argmax(dim=1).item()
-    print(f"Actual label: {y}")
-    print(f"Predicted label: {pred}")
+        
+    print("\n🧠 Sample Prediction:")
+    print(f"   ✅ Actual Label   : {y}")
+    print(f"   🧮 Predicted Label: {pred}")
+    
+    # Plot the image
+    plt.figure(figsize=(2, 2))
+    plt.imshow(x.squeeze(), cmap='gray')
+    plt.title(f'Actual: {y} |  Predicted: {pred}')
+    plt.axis('off')
+    plt.show()
+    
+def plot_training(train_losses, training_accuracies):
+    plt.figure(figsize=(10, 5))
+
+    # Plot training loss
+    plt.subplot(1, 2, 1)
+    plt.plot(range(1, len(train_losses) + 1), train_losses, label='Train Loss', color='red', marker='o')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title('Training Loss Over Epochs')
+    plt.grid(True)
+    plt.legend()
+
+    # Plot training accuracy
+    plt.subplot(1, 2, 2)
+    plt.plot(range(1, len(training_accuracies) + 1), training_accuracies, label='Training Accuracy', color='blue', marker='o')
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy')
+    plt.title('Training Accuracy Over Epochs')
+    plt.grid(True)
+    plt.legend()
+
+    plt.tight_layout()
+    plt.savefig('training_plot.png')
+    plt.close()
+
+    print("📊 Training plot saved as 'training_plot.png'")
+
 
 def main():
     transform = transforms.Compose([
@@ -144,15 +185,24 @@ def main():
 
     model = PredictiveCodingNet().to(device)
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
-
+   
+    train_losses = []
+    train_accuracies = []
 
     for epoch in range(num_epochs):
-        print(f"Epoch {epoch + 1}/{num_epochs}")
-        train(model, train_loader, optimizer)
+        print(f"\n📦 Epoch [{epoch + 1}/{num_epochs}]")
+        train_loss, train_acc =train(model, train_loader, optimizer)
+        train_losses.append(train_loss)
+        train_accuracies.append(train_acc)
+    
+    
+    plot_training(train_losses,train_accuracies)
     
     test(model, test_loader)
     
     predict_single_sample(model, test_data)
+    
+
 
 
 if __name__ == "__main__":
