@@ -2,3 +2,6 @@ __pycache__*
 venv
 data
 *.png
+
+# But keep PNG files in the screenshots/ directory
+!screenshots/*.png
