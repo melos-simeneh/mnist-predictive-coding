@@ -1,34 +1,66 @@
 # 🧠 Predictive Coding for MNIST Classification
 
-This project implements a **biologically inspired predictive coding neural network** to classify handwritten digits from the MNIST dataset. Unlike traditional feedforward networks trained with backpropagation, this architecture performs learning and inference by **minimizing local prediction errors** through **iterative updates**.
+This project implements a **biologically inspired predictive coding neural network** to classify handwritten digits from the MNIST dataset. It classifies handwritten digits by **iteratively refining internal beliefs** through **layer-wise predictive coding**. Unlike standard deep learning models trained with backpropagation, this model learns by **minimizing local prediction errors** across multiple layers via **iterative inference**.
 
 ## 🧪 Overview
 
 - **Framework:** PyTorch
-- **Dataset:** MNIST (handwritten digit classification)
+- **Dataset:** MNIST (handwritten digits)
 - **Learning Paradigm:** Supervised predictive coding
-- **Key Features:**
-  - Feedback and lateral connections
-  - Iterative latent state inference
-  - Modular architecture and training pipeline
-  - Visualization of training curves and predictions
+- **Architecture Highlights:**
+
+  - Layer-wise feedback and lateral modulation
+  - Iterative latent state updates per input
+  - Fully differentiable learning pipeline
+  - Modular, extensible implementation
+  - Visual feedback during training and testing
+
+## 📊  Predictive Coding: Layer Flow
+
+Each layer in the model is not just a pass-through — it's a dynamic system:
+
+```plaintext
+ [Input Image]  
+   ↓  
+[Layer 1 State] ←→ Feedback from Layer 2 ←→ Lateral Coherence  
+   ↓  
+[Layer 2 State] ←→ Feedback from Layer 3 ←→ Lateral Coherence  
+   ↓  
+[Layer 3 (Top Layer)] ← No feedback  
+```
+
+At every iteration:
+
+- Each layer updates its latent state to reduce the error between:
+
+  - Its input (from below)
+  - Its prediction (from above)
+
+- The final layer’s latent state is used for classification via cross-entropy.
+
+## 💡 Analogy
+
+Think of the brain:
+Each layer `guesses` what's coming from below and refines its guess using errors. Over time (inference steps), the guesses get better — that’s the essence of predictive coding.
 
 ## 🔧 Prerequisites
 
 Before running this project, make sure you have the following installed:
 
-- Python 3.8 or higher
-- pip (Python package manager)
+- Python ≥ 3.8
+
+- PyTorch ≥ 1.11
+
+- `torchvision`, `matplotlib`, `numpy`, `tqdm`
 
 ## ⚙️ Technologies Used
 
 | Technology     | Purpose                                 |
 |----------------|------------------------------------------|
-| **PyTorch**     | Deep learning framework                 |
+| **PyTorch**     | Core model and training framework                |
 | **Torchvision** | MNIST dataset utilities and transforms |
 | **Matplotlib**  | Training loss/accuracy plotting         |
 | **TQDM**        | Progress bar during training            |
-| **NumPy**       | Numerical operations (implicitly used) |
 
 ## 🏗️ Project Structure
 
