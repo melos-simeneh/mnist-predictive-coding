@@ -81,7 +81,7 @@ mnist-predictive-coding
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/mnist-predictive-coding.git
+git clone https://github.com/melos-simeneh/mnist-predictive-coding.git
 cd mnist-predictive-coding
 ```
 
